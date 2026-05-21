@@ -11,6 +11,15 @@ define('UPLOAD_DIR', __DIR__ . '/../uploads/');
 
 define('MAX_FILE_SIZE', 25 * 1024 * 1024); // 25 MB max upload size
 
+// OAuth Configuration (Get these from Google Cloud Console and Facebook Developers)
+define('OAUTH_ENABLED', true);
+define('GOOGLE_CLIENT_ID', 'YOUR_GOOGLE_CLIENT_ID_HERE');
+define('GOOGLE_CLIENT_SECRET', 'YOUR_GOOGLE_CLIENT_SECRET_HERE');
+define('GOOGLE_REDIRECT_URI', 'http://localhost/CodeKeep/api/oauth_callback.php?provider=google');
+define('FACEBOOK_APP_ID', 'YOUR_FACEBOOK_APP_ID_HERE');
+define('FACEBOOK_APP_SECRET', 'YOUR_FACEBOOK_APP_SECRET_HERE');
+define('FACEBOOK_REDIRECT_URI', 'http://localhost/CodeKeep/api/oauth_callback.php?provider=facebook');
+
 function db_connect() {
     $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
     try {

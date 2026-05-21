@@ -17,10 +17,24 @@ if (!$email || !$password) {
     exit;
 }
 
-$stmt = $pdo->prepare('SELECT id, name, password FROM users WHERE email = ? LIMIT 1');
+$stmt = $pdo->prepare('SELECT id, name, password, oauth_provider FROM users WHERE email = ? LIMIT 1');
 $stmt->execute([$email]);
 $user = $stmt->fetch();
-if (!$user || !password_verify($password, $user['password'])) {
+
+// User exists
+if ($user) {
+    // If user registered via OAuth, they won't have a password
+    if ($user['oauth_provider'] && !$user['password']) {
+        echo json_encode(['success' => false, 'message' => 'This account was created via ' . ucfirst($user['oauth_provider']) . '. Please use that to login.']);
+        exit;
+    }
+    // Check password
+    if (!password_verify($password, $user['password'])) {
+        echo json_encode(['success' => false, 'message' => 'Invalid email or password']);
+        exit;
+    }
+} else {
+    // User doesn't exist
     echo json_encode(['success' => false, 'message' => 'Invalid email or password']);
     exit;
 }

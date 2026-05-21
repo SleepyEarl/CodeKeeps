@@ -12,6 +12,7 @@ if (is_logged_in()) {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>CodeKeep | Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body class="d-flex align-items-center min-vh-100">
@@ -38,6 +39,17 @@ if (is_logged_in()) {
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Login</button>
                     </form>
+                    <div class="mt-4 mb-3">
+                        <p class="text-center text-muted small">Or continue with</p>
+                        <div class="d-flex gap-2">
+                            <a href="../api/oauth_login.php?provider=google" class="btn btn-outline-secondary flex-grow-1">
+                                <i class="fab fa-google"></i> Google
+                            </a>
+                            <a href="../api/oauth_login.php?provider=facebook" class="btn btn-outline-secondary flex-grow-1">
+                                <i class="fab fa-facebook"></i> Facebook
+                            </a>
+                        </div>
+                    </div>
                     <p class="text-center text-muted mt-3">Don't have an account? <a href="register.php">Register</a></p>
                 </div>
             </div>

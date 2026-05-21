@@ -262,3 +262,42 @@ body.dark-mode .btn-outline-danger:hover {
 
 .nav-activity .dropdown-menu::-webkit-scrollbar { width: 8px; }
 .nav-activity .dropdown-menu::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.06); border-radius: 4px; }
+
+/* Social OAuth Buttons */
+.btn-oauth-google {
+    color: #1f2937;
+    border-color: #d1d5db;
+}
+
+.btn-oauth-google:hover {
+    background-color: #f3f4f6;
+    border-color: #9ca3af;
+}
+
+.btn-oauth-facebook {
+    color: #1877f2;
+    border-color: #e5e7eb;
+}
+
+.btn-oauth-facebook:hover {
+    background-color: #f0f2f5;
+    border-color: #cbd5e1;
+}
+
+body.dark-mode .btn-oauth-google {
+    color: #e5e7eb;
+}
+
+body.dark-mode .btn-oauth-google:hover {
+    background-color: #374151;
+    border-color: #6b7280;
+}
+
+body.dark-mode .btn-oauth-facebook {
+    color: #60a5fa;
+}
+
+body.dark-mode .btn-oauth-facebook:hover {
+    background-color: #1f2937;
+    border-color: #4b5563;
+}
