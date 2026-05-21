@@ -152,18 +152,22 @@ function setDashboardStats(stats) {
 
 function renderActivityLog(logs) {
     const activityArea = document.getElementById('activity-log');
-    if (!activityArea) return;
+    const navActivity = document.getElementById('nav-activity-list');
+    const emptyHtml = '<li class="list-group-item text-muted">Activity log is empty.</li>';
     if (!logs.length) {
-        activityArea.innerHTML = '<li class="list-group-item text-muted">Activity log is empty.</li>';
+        if (activityArea) activityArea.innerHTML = emptyHtml;
+        if (navActivity) navActivity.innerHTML = emptyHtml;
         return;
     }
-    activityArea.innerHTML = logs.map(entry => `
+    const itemsHtml = logs.map(entry => `
         <li class="list-group-item">
             <strong>${escapeHtml(entry.action)}</strong>
             <div class="small text-muted">${entry.target_type || ''} ${entry.target_name || ''}</div>
             <div class="small text-muted">${entry.created_at}</div>
         </li>
     `).join('');
+    if (activityArea) activityArea.innerHTML = itemsHtml;
+    if (navActivity) navActivity.innerHTML = itemsHtml;
 }
 
 function renderRecentFiles(files) {

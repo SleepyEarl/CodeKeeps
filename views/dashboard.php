@@ -19,7 +19,7 @@ $profilePic = $user['profile_pic'] ? '../uploads/' . $user['profile_pic'] : 'htt
     <title>CodeKeep | Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/style.css">
-</head>
+</head> 
 <body data-dashboard="true">
 <nav class="navbar navbar-expand-lg navbar-light border-bottom">
     <div class="container-fluid px-4">
@@ -28,6 +28,12 @@ $profilePic = $user['profile_pic'] ? '../uploads/' . $user['profile_pic'] : 'htt
             <button class="btn btn-sm btn-outline-secondary" onclick="toggleDarkMode()" title="Toggle dark mode" id="dark-mode-btn">
                 <span id="theme-icon">🌙 Dark</span>
             </button>
+            <div class="nav-activity dropdown">
+                <a href="#" class="nav-link dropdown-toggle" id="activityDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Activity</a>
+                <ul class="dropdown-menu dropdown-menu-end p-2" aria-labelledby="activityDropdown" id="nav-activity-list" style="min-width:320px; max-height:320px; overflow:auto;">
+                    <li class="small text-muted">Loading...</li>
+                </ul>
+            </div>
             <a href="profile.php" title="Edit profile">
                 <img src="<?= htmlspecialchars($profilePic, ENT_QUOTES) ?>" alt="Profile" class="profile-picture">
             </a>
@@ -47,7 +53,6 @@ $profilePic = $user['profile_pic'] ? '../uploads/' . $user['profile_pic'] : 'htt
                     <a class="nav-link active" href="#">Dashboard</a>
                     <a class="nav-link" href="#upload-section">Upload Files</a>
                     <a class="nav-link" href="#folders-section">Folders</a>
-                    <a class="nav-link" href="#activity-section">Activity</a>
                 </nav>
                 <div class="mt-4">
                     <h6>Quick stats</h6>
@@ -148,14 +153,7 @@ $profilePic = $user['profile_pic'] ? '../uploads/' . $user['profile_pic'] : 'htt
                     <div class="row" id="folder-list"></div>
                 </div>
             </div>
-            <div class="row g-3" id="activity-section">
-                <div class="col-12">
-                    <div class="card p-4">
-                        <h5>Activity log</h5>
-                        <ul class="list-group list-group-flush" id="activity-log"></ul>
-                    </div>
-                </div>
-            </div>
+            <!-- Activity moved to navbar dropdown -->
         </div>
     </div>
 </div>

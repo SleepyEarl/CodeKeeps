@@ -252,3 +252,13 @@ body.dark-mode .btn-outline-danger:hover {
         min-height: auto;
     }
 }
+
+/* Show activity dropdown on hover for quick access */
+.nav-activity { position: relative; }
+.nav-activity .dropdown-menu { display: none; background: var(--bg-secondary); border: none; box-shadow: none; border-radius: 12px; padding: .5rem; position: absolute; top: calc(100% + 6px); right: 0; z-index: 2000; min-width: 320px; max-height: 320px; overflow: auto; }
+.nav-activity:hover .dropdown-menu { display: block; }
+.nav-activity .dropdown-menu li { list-style: none; }
+.nav-activity .dropdown-menu .list-group-item { border: none; padding: .5rem .75rem; background: transparent; }
+
+.nav-activity .dropdown-menu::-webkit-scrollbar { width: 8px; }
+.nav-activity .dropdown-menu::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.06); border-radius: 4px; }
