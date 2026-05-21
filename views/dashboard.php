@@ -28,20 +28,20 @@ $profilePic = $user['profile_pic'] ? '../uploads/' . $user['profile_pic'] : 'htt
             <button class="btn btn-sm btn-outline-secondary" onclick="toggleDarkMode()" title="Toggle dark mode" id="dark-mode-btn">
                 <span id="theme-icon">🌙 Dark</span>
             </button>
-            <img src="<?= htmlspecialchars($profilePic, ENT_QUOTES) ?>" alt="Profile" class="profile-picture">
+            <a href="profile.php" title="Edit profile">
+                <img src="<?= htmlspecialchars($profilePic, ENT_QUOTES) ?>" alt="Profile" class="profile-picture">
+            </a>
             <div>
                 <div><?= htmlspecialchars($user['name'], ENT_QUOTES) ?></div>
                 <small class="text-muted">Student Storage</small>
             </div>
-            <a class="btn btn-outline-secondary btn-sm" href="profile.php">Profile</a>
-            <a class="btn btn-outline-danger btn-sm" href="../logout.php">Logout</a>
         </div>
     </div>
 </nav>
 <div class="container-fluid px-4 py-4">
     <div class="row">
         <div class="col-xl-3 mb-4">
-            <div class="sidebar p-3">
+            <div class="sidebar p-3 d-flex flex-column">
                 <h5>Navigation</h5>
                 <nav class="nav flex-column">
                     <a class="nav-link active" href="#">Dashboard</a>
@@ -59,6 +59,16 @@ $profilePic = $user['profile_pic'] ? '../uploads/' . $user['profile_pic'] : 'htt
                 <h6>Recently Added</h6>
                 <div id="recent-files-section" class="mt-3">
                     <p class="text-muted small">No files yet</p>
+                </div>
+                <hr>
+                <h6>About</h6>
+                <div class="about small text-muted">
+                    <p>CodeKeep is a beginner-friendly full-stack web application designed as a simple cloud file storage and repository system for students. It allows users to securely upload, organize, and manage their files and folders online anytime and anywhere using a web browser. Built using PHP, MySQL, JavaScript, and Bootstrap, CodeKeep demonstrates core concepts of web development such as authentication, database management, file handling, and API-based backend structure. The system is designed to be lightweight, easy to use, and educational, making it ideal for students who are learning full-stack development.</p>
+
+                    <p>This project was created by me 2nd year Computer Studies student, Earl Lumosad, from St. Peter’s College, Iligan City, as part of my academic practice in building real-world web applications.</p>
+                </div>
+                <div class="mt-auto pt-3">
+                    <a class="btn btn-outline-danger btn-sm w-100" href="../logout.php">Logout</a>
                 </div>
             </div>
         </div>
