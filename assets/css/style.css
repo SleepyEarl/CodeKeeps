@@ -1,16 +1,16 @@
 /* Basic custom styles for CodeKeep */
 :root {
     --bg-primary: #f4f6fb;
-    --bg-secondary: #ffffff;
+    --bg-secondary: #f8f9fa;
     --text-primary: #2f3d4a;
     --text-secondary: #4f5d72;
     --text-muted: #6c757d;
-    --border-color: #e6e9ef;
-    --card-shadow: 0 10px 30px rgba(63, 72, 85, 0.08);
-    --navbar-bg: #ffffff;
-    --sidebar-bg: #ffffff;
+    --border-color: #e0e3e8;
+    --card-shadow: 0 10px 30px rgba(63, 72, 85, 0.15);
+    --navbar-bg: #f8f9fa;
+    --sidebar-bg: #f8f9fa;
     --drop-zone-bg: #fbfcff;
-    --drop-zone-border: #ced4da;
+    --drop-zone-border: #d9dce3;
     --drop-zone-hover-bg: #eef5ff;
 }
 
@@ -77,6 +77,27 @@ body {
     color: var(--text-primary);
     box-shadow: var(--card-shadow);
     transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.post-author-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--bg-secondary);
+}
+
+.post-author-name {
+    font-size: 1.1rem;
+}
+
+.post-attachment-clickable {
+    cursor: pointer;
+    transition: transform 0.15s ease;
+}
+
+.post-attachment-clickable:hover {
+    transform: scale(1.01);
 }
 
 .file-card {

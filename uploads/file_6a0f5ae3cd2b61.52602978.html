@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electicity Bill Calculator</title>
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+
+    <div class="container">
+        <h2>Electicity Bill Calculator</h2>
+
+            <form onsubmit="event.preventDefault();">
+                <label for="month">Month:</label>
+                <input type="text" id="month" placeholder="e.g. January"> <br>
+
+                <label for="consumption">Power Consumptoin:</label>
+                <input type="number" id="consumption"> <br>
+
+                <label for="cost">Cost per kilowatt-hour:</label>
+                <input type="number" id="cost"> <br>
+
+                <button id="btn_calculate">Calculate</button>
+            </form>
+
+    
+            <div id="result" ></div>
+
+            <table id="historyTable">
+            <thead>
+                <tr>
+                    <th>Month</th>
+                    <th>Power Consumption</th>
+                    <th>Cost Per kWh</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+
+    </div>
+    
+
+   <script>
+        let btn_calculate = document.getElementById("btn_calculate");
+        btn_calculate.addEventListener("click", function () {
+            let month = document.getElementById("month").value;
+            let consumption = document.getElementById("consumption").value;
+            let cost = document.getElementById("cost").value;
+            let result = document.getElementById("result");
+
+            if (month === "" || consumption === "" || cost === "") {
+                alert("Please fill out all fields!");
+                return;
+            }
+
+            let result_value = consumption * cost;
+            result.innerHTML = `Your electric bill is: ${result_value.toFixed(2)}`;
+
+            let table = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
+            let newRow = table.insertRow();
+
+            newRow.insertCell(0).textContent = month;
+            newRow.insertCell(1).textContent = consumption;
+            newRow.insertCell(2).textContent = cost;
+            newRow.insertCell(3).textContent = result_value.toFixed(2);
+
+            document.getElementById("month").value = "";
+            document.getElementById("consumption").value = "";
+            document.getElementById("cost").value = "";
+        });
+    </script>
+
+</body>
+</html>

@@ -19,12 +19,17 @@ async function loadPosts() {
             const el = document.createElement('div');
             el.className = 'post mb-3';
             const isOwner = p.user_id === currentUserId;
+            const createdDate = String(p.created_at || '').split(' ')[0] || '';
+            const profilePic = p.profile_pic ? `../uploads/${p.profile_pic}` : 'https://via.placeholder.com/40?text=U';
             el.innerHTML = `
                 <div class="card p-3">
                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <div>
-                            <div><strong>${escapeHtml(p.name || 'User')}</strong></div>
-                            <div class="text-muted small">${escapeHtml(p.created_at)}</div>
+                        <div class="d-flex align-items-center gap-2">
+                            <img src="${escapeHtml(profilePic)}" alt="Profile" class="post-author-avatar">
+                            <div>
+                                <div class="post-author-name"><strong>${escapeHtml(p.name || 'User')}</strong></div>
+                                <div class="text-muted small">${escapeHtml(createdDate)}</div>
+                            </div>
                         </div>
                         ${isOwner ? `<div class="d-flex gap-1">
                             <button class="btn btn-sm btn-outline-secondary" onclick="editPost(${p.id}, '${escapeHtml(p.title || '')}', '${escapeHtml(p.content)}')">Edit</button>
@@ -33,7 +38,7 @@ async function loadPosts() {
                     </div>
                     ${p.title ? `<h6>${escapeHtml(p.title)}</h6>` : ''}
                     <div class="mb-2">${escapeHtml(p.content)}</div>
-                    ${p.attachment ? `<div class="mb-2"><img src="../uploads/${p.attachment}" alt="attachment" style="max-width: 100%; max-height: 300px; border-radius: 8px;"></div>` : ''}
+                    ${p.attachment ? `<div class="mb-2"><img src="../uploads/${p.attachment}" alt="attachment" class="post-attachment-clickable" onclick="openPostImage('../uploads/${p.attachment}', '${escapeHtml(p.title || 'Attachment')}')" style="max-width: 100%; max-height: 300px; border-radius: 8px;"></div>` : ''}
                     <div class="d-flex gap-2">
                         <button class="btn btn-sm btn-outline-primary" onclick="toggleReact(${p.id}, this)">Like (${p.reactions})</button>
                         <button class="btn btn-sm btn-outline-secondary" onclick="focusComment(${p.id})">Comment (${p.comments.length})</button>
@@ -96,6 +101,33 @@ async function sendComment(postId) {
 function focusComment(postId) {
     const el = document.getElementById('comment-input-' + postId);
     if (el) el.focus();
+}
+
+function openPostImage(imageUrl, title) {
+    const existingModal = document.getElementById('postImageModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    const modalHtml = `
+        <div class="modal fade" id="postImageModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-xl">
+                <div class="modal-content bg-dark text-white">
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title">${escapeHtml(title)}</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center p-0">
+                        <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(title)}" style="max-width: 100%; height: auto; display: inline-block;" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    const modalEl = document.getElementById('postImageModal');
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+    modalEl.addEventListener('hidden.bs.modal', function () { this.remove(); });
 }
 
 async function deletePost(postId) {

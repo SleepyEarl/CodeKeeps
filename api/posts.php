@@ -64,7 +64,7 @@ try {
 
 if ($action === 'list') {
     // return latest posts with comments and reaction counts
-    $stmt = $pdo->prepare('SELECT p.id, p.user_id, p.title, p.content, p.attachment, p.created_at, u.name FROM posts p JOIN users u ON p.user_id = u.id ORDER BY p.created_at DESC LIMIT 50');
+    $stmt = $pdo->prepare('SELECT p.id, p.user_id, p.title, p.content, p.attachment, p.created_at, u.name, u.profile_pic FROM posts p JOIN users u ON p.user_id = u.id ORDER BY p.created_at DESC LIMIT 50');
     $stmt->execute();
     $posts = $stmt->fetchAll();
     foreach ($posts as &$p) {
