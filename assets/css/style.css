@@ -14,6 +14,14 @@
     --drop-zone-hover-bg: #eef5ff;
 }
 
+.site-logo {
+    width: 42px;
+    height: 42px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
 body.dark-mode {
     --bg-primary: #1a1f2e;
     --bg-secondary: #232d3e;

@@ -19,11 +19,16 @@ $profilePic = $user['profile_pic'] ? '../uploads/' . $user['profile_pic'] : 'htt
     <title>CodeKeep | Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="icon" href="CodeKeep_icon.png">
+    <link rel="apple-touch-icon" href="<?= htmlspecialchars($profilePic, ENT_QUOTES) ?>">
 </head> 
 <body data-dashboard="true">
 <nav class="navbar navbar-expand-lg navbar-light border-bottom">
     <div class="container-fluid px-4">
-        <a class="navbar-brand me-3" href="#">CodeKeep</a>
+        <a class="navbar-brand me-3 d-flex align-items-center gap-2" href="#">
+           
+            <span>🔥CodeKeep</span>
+        </a>
         <!-- navbar search removed per user request -->
         <div class="d-flex align-items-center gap-3">
             <button class="btn btn-sm btn-outline-secondary" onclick="toggleDarkMode()" title="Toggle dark mode" id="dark-mode-btn">
@@ -62,7 +67,6 @@ $profilePic = $user['profile_pic'] ? '../uploads/' . $user['profile_pic'] : 'htt
                     <a class="nav-link" href="#private-files">Private Files</a>
                     <a class="nav-link" href="#deleted-files">Deleted Files</a>
                     <a class="nav-link" href="#notifications">Notifications</a>
-                    <a class="nav-link" href="#folders-section">Folders</a>
                 </nav>
                 <div class="mt-4">
                     <h6>Quick stats</h6>
@@ -121,7 +125,7 @@ $profilePic = $user['profile_pic'] ? '../uploads/' . $user['profile_pic'] : 'htt
                     </form>
                 </div>
                 <hr>
-                <div class="mb-2 text-muted small">Global feed: all registered users can see and interact with these posts.</div>
+                <div class="mb-2 text-muted small">Global feed:</div>
                 <div id="posts-list"></div>
             </div>
             <!-- Folder list moved to sidebar Projects -->
