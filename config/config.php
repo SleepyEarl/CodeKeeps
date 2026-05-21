@@ -3,7 +3,7 @@
 // Change database settings for your server
 session_start();
 
-define('DB_HOST', 'db.fr-pari1.bengt.wasmernet.com');
+define('DB_HOST', 'localhost');
 define('DB_NAME', 'codekeep');
 define('DB_USER', 'root');
 define('DB_PASS', '');
