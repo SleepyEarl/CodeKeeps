@@ -28,7 +28,7 @@ if (is_logged_in()) {
                 <div class="card-body">
                     <h3 class="card-title mb-3">Welcome back to CodeKeep</h3>
                     <div id="alert-area"></div>
-                    <form id="auth-form" data-endpoint="login">
+                    <form id="auth-form" data-endpoint="login" action="../api/login.php" method="POST">
                         <div class="mb-3">
                             <label class="form-label">Email</label>
                             <input type="email" name="email" class="form-control" required>

@@ -32,22 +32,38 @@ if (document.readyState === 'loading') {
     initDarkMode();
 }
 
-function handleFormResponse(response) {
-    if (!response.ok) throw new Error('Network error');
-    return response.json();
+async function handleFormResponse(response) {
+    const text = await response.text();
+    if (!response.ok) {
+        const message = text ? text.replace(/\s+/g, ' ').trim() : response.statusText;
+        throw new Error(`Network error: ${response.status} ${message}`);
+    }
+    try {
+        return JSON.parse(text);
+    } catch (err) {
+        const message = text ? text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim() : 'Invalid JSON response';
+        throw new Error(`Invalid JSON response: ${message}`);
+    }
 }
 
 async function sendAuthForm(form, endpoint) {
-    const formData = new FormData(form);
-    const response = await fetch(`${apiBase}/${endpoint}.php`, {
-        method: 'POST',
-        body: formData,
-    });
-    const data = await handleFormResponse(response);
-    if (!data.success) {
-        showAlert(data.message || 'Something went wrong', 'danger');
-    } else {
+    try {
+        const formData = new FormData(form);
+        const response = await fetch(`${apiBase}/${endpoint}.php`, {
+            method: 'POST',
+            credentials: 'same-origin',
+            body: formData,
+        });
+        const data = await handleFormResponse(response);
+        if (!data.success) {
+            showAlert(data.message || 'Something went wrong', 'danger');
+            return false;
+        }
         window.location.href = '../views/dashboard.php';
+        return true;
+    } catch (err) {
+        showAlert(err.message || 'Unable to submit form', 'danger');
+        return false;
     }
 }
 
@@ -240,6 +256,8 @@ async function openFileViewer(fileId) {
         `;
     } else if (file.mime_type.startsWith('image/')) {
         body = `<div class="text-center"><img src="${file.download_url}" alt="${escapeHtml(file.original_name)}" style="max-width:100%; height:auto;"></div>`;
+    } else if (file.mime_type.startsWith('video/')) {
+        body = `<div class="text-center"><video controls style="max-width:100%; height:auto;"><source src="${file.download_url}" type="${file.mime_type}">Your browser does not support the video tag.</video></div>`;
     } else {
         body = `<div class="text-muted">Preview not available. <a href="${file.download_url}" download>Download</a></div>`;
     }
@@ -673,7 +691,15 @@ window.addEventListener('DOMContentLoaded', () => {
         authForm.addEventListener('submit', async (event) => {
             event.preventDefault();
             const endpoint = authForm.dataset.endpoint;
-            await sendAuthForm(authForm, endpoint);
+            if (!endpoint) {
+                showAlert('Login or register endpoint is missing', 'danger');
+                return;
+            }
+            try {
+                await sendAuthForm(authForm, endpoint);
+            } catch (err) {
+                showAlert(err.message || 'Unable to authenticate', 'danger');
+            }
         });
     }
     if (dashboardForm) {

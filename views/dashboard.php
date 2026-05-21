@@ -29,6 +29,13 @@ $profilePic = $user['profile_pic'] ? '../uploads/' . $user['profile_pic'] : 'htt
             <button class="btn btn-sm btn-outline-secondary" onclick="toggleDarkMode()" title="Toggle dark mode" id="dark-mode-btn">
                 <span id="theme-icon">🌙 Dark</span>
             </button>
+            <div class="dropdown">
+                <button class="btn btn-sm btn-primary" id="upload-btn" data-bs-toggle="dropdown" aria-expanded="false">＋</button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="upload-btn">
+                    <li><a class="dropdown-item" href="upload.php?type=file">Upload file</a></li>
+                    <li><a class="dropdown-item" href="upload.php?type=folder">Create folder</a></li>
+                </ul>
+            </div>
             <div class="nav-activity dropdown">
                 <a href="#" class="nav-link dropdown-toggle" id="activityDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Activity</a>
                 <ul class="dropdown-menu dropdown-menu-end p-2" aria-labelledby="activityDropdown" id="nav-activity-list" style="min-width:320px; max-height:320px; overflow:auto;">
@@ -90,56 +97,32 @@ $profilePic = $user['profile_pic'] ? '../uploads/' . $user['profile_pic'] : 'htt
                     </div>
                 </div>
             </div>
-            <div class="card mb-4 p-4" id="upload-section">
+            <div class="card mb-4 p-4" id="blog-section">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="mb-0">Upload</h5>
+                    <h5 class="mb-0">Community</h5>
+                    <div class="text-muted small">Share updates, ask questions, and discuss</div>
                 </div>
-                <div id="alert-area"></div>
+                <div id="blog-alert"></div>
                 <div class="mb-3">
-                    <ul class="nav nav-tabs" id="uploadTabs" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="files-tab" data-bs-toggle="tab" data-bs-target="#files-pane" type="button" role="tab" aria-controls="files-pane" aria-selected="true">Files</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="folder-tab" data-bs-toggle="tab" data-bs-target="#folder-pane" type="button" role="tab" aria-controls="folder-pane" aria-selected="false">Folder</button>
-                        </li>
-                    </ul>
+                    <form id="post-form">
+                        <div class="mb-2">
+                            <input id="post-title" class="form-control" placeholder="Title (optional)">
+                        </div>
+                        <div class="mb-2">
+                            <textarea id="post-content" class="form-control" rows="3" placeholder="Write a post..."></textarea>
+                        </div>
+                        <div class="mb-2">
+                            <input type="file" id="post-attachment" name="attachment" class="form-control" accept="image/*">
+                            <small class="text-muted">Attach an image (optional)</small>
+                        </div>
+                        <div class="text-end">
+                            <button class="btn btn-primary" type="submit">Post</button>
+                        </div>
+                    </form>
                 </div>
-                <div class="tab-content" id="uploadTabContent">
-                    <div class="tab-pane fade show active" id="files-pane" role="tabpanel" aria-labelledby="files-tab">
-                        <form id="upload-form">
-                            <div class="mb-3">
-                                <label class="form-label">Choose files</label>
-                                <input id="upload-files" type="file" name="files[]" class="form-control" multiple>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Folder destination</label>
-                                <select id="folder-select" class="form-select" name="folder_id">
-                                    <option value="">Root folder</option>
-                                </select>
-                            </div>
-                            <div id="upload-dropzone" class="drop-zone mb-3">
-                                Drag and drop files here or click to choose files
-                            </div>
-                            <button type="submit" class="btn btn-primary">Upload now</button>
-                        </form>
-                    </div>
-                    <div class="tab-pane fade" id="folder-pane" role="tabpanel" aria-labelledby="folder-tab">
-                        <form id="folder-upload-form">
-                            <div class="mb-3">
-                                <label class="form-label">Folder name</label>
-                                <input id="folder-upload-name" type="text" class="form-control" placeholder="My Folder" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Parent folder (optional)</label>
-                                <select id="parent-folder-upload-select" class="form-select">
-                                    <option value="">Root folder</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Create folder</button>
-                        </form>
-                    </div>
-                </div>
+                <hr>
+                <div class="mb-2 text-muted small">Global feed: all registered users can see and interact with these posts.</div>
+                <div id="posts-list"></div>
             </div>
             <!-- Folder list moved to sidebar Projects -->
             <!-- Activity moved to navbar dropdown -->
@@ -181,6 +164,8 @@ $profilePic = $user['profile_pic'] ? '../uploads/' . $user['profile_pic'] : 'htt
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>var currentUserId = <?php echo $userId; ?>;</script>
 <script src="../assets/js/main.js"></script>
+<script src="../assets/js/posts.js"></script>
 </body>
 </html>

@@ -35,10 +35,16 @@ if ($stmt->fetch()) {
 }
 
 $hash = password_hash($password, PASSWORD_DEFAULT);
-$stmt = $pdo->prepare('INSERT INTO users (name, email, password, created_at) VALUES (?, ?, ?, NOW())');
-$stmt->execute([$name, $email, $hash]);
-$userId = $pdo->lastInsertId();
+try {
+    $stmt = $pdo->prepare('INSERT INTO users (name, email, password, created_at) VALUES (?, ?, ?, NOW())');
+    $stmt->execute([$name, $email, $hash]);
+    $userId = $pdo->lastInsertId();
+} catch (PDOException $e) {
+    echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
+    exit;
+}
 
+session_regenerate_id(true);
 $_SESSION['user_id'] = $userId;
 $_SESSION['user_name'] = $name;
 

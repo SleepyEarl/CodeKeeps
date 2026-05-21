@@ -28,7 +28,7 @@ if (is_logged_in()) {
                 <div class="card-body">
                     <h3 class="card-title mb-3">Create your CodeKeep account</h3>
                     <div id="alert-area"></div>
-                    <form id="auth-form" data-endpoint="register">
+                    <form id="auth-form" data-endpoint="register" action="../api/register.php" method="POST">
                         <div class="mb-3">
                             <label class="form-label">Full Name</label>
                             <input type="text" name="name" class="form-control" required>

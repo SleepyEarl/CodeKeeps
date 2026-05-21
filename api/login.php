@@ -17,19 +17,19 @@ if (!$email || !$password) {
     exit;
 }
 
-$stmt = $pdo->prepare('SELECT id, name, password, oauth_provider FROM users WHERE email = ? LIMIT 1');
-$stmt->execute([$email]);
-$user = $stmt->fetch();
+try {
+    $stmt = $pdo->prepare('SELECT id, name, password FROM users WHERE email = ? LIMIT 1');
+    $stmt->execute([$email]);
+    $user = $stmt->fetch();
+} catch (PDOException $e) {
+    echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
+    exit;
+}
 
 // User exists
 if ($user) {
-    // If user registered via OAuth, they won't have a password
-    if ($user['oauth_provider'] && !$user['password']) {
-        echo json_encode(['success' => false, 'message' => 'This account was created via ' . ucfirst($user['oauth_provider']) . '. Please use that to login.']);
-        exit;
-    }
     // Check password
-    if (!password_verify($password, $user['password'])) {
+    if (!$user['password'] || !password_verify($password, $user['password'])) {
         echo json_encode(['success' => false, 'message' => 'Invalid email or password']);
         exit;
     }
@@ -39,6 +39,7 @@ if ($user) {
     exit;
 }
 
+session_regenerate_id(true);
 $_SESSION['user_id'] = $user['id'];
 $_SESSION['user_name'] = $user['name'];
 
