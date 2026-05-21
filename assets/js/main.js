@@ -728,14 +728,6 @@ window.addEventListener('DOMContentLoaded', () => {
     if (document.body.dataset.dashboard === 'true') {
         loadDashboard();
     }
-    // About toggle
-    const aboutToggle = document.getElementById('about-toggle');
-    const aboutSection = document.getElementById('about-section');
-    if (aboutToggle && aboutSection) {
-        aboutToggle.addEventListener('click', () => {
-            aboutSection.classList.toggle('collapsed');
-        });
-    }
     // Profile button opens floating modal
     const profileBtn = document.getElementById('profile-btn');
     if (profileBtn) {

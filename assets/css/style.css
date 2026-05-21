@@ -266,9 +266,6 @@ body.dark-mode .btn-outline-danger:hover {
 .project-item { padding: .5rem 0; border-bottom: 1px dashed rgba(0,0,0,0.03); }
 .project-item .project-files { font-size: .85rem; color: var(--text-secondary); }
 
-.about-toggle { cursor: pointer; color: var(--text-secondary); }
-.about.collapsed { display: none; }
-
 /* Toast notifications */
 .ck-toast { font-size: 0.95rem; }
 .ck-toast-danger { background: rgba(220,53,69,0.95) !important; }
