@@ -253,6 +253,27 @@ body.dark-mode .btn-outline-danger:hover {
     }
 }
 
+/* Sidebar collapsed state */
+.sidebar {
+    transition: width 0.25s ease, transform 0.25s ease;
+}
+.sidebar.collapsed {
+    width: 72px !important;
+}
+.sidebar.collapsed .nav-link { opacity: 0; transform: translateX(-6px); }
+.sidebar.collapsed h5, .sidebar.collapsed h6, .sidebar.collapsed .about { display: none; }
+
+.project-item { padding: .5rem 0; border-bottom: 1px dashed rgba(0,0,0,0.03); }
+.project-item .project-files { font-size: .85rem; color: var(--text-secondary); }
+
+.about-toggle { cursor: pointer; color: var(--text-secondary); }
+.about.collapsed { display: none; }
+
+/* Toast notifications */
+.ck-toast { font-size: 0.95rem; }
+.ck-toast-danger { background: rgba(220,53,69,0.95) !important; }
+.ck-toast-success { background: rgba(13,110,253,0.95) !important; }
+
 /* Show activity dropdown on hover for quick access */
 .nav-activity { position: relative; }
 .nav-activity .dropdown-menu { display: none; background: var(--bg-secondary); border: none; box-shadow: none; border-radius: 12px; padding: .5rem; position: absolute; top: calc(100% + 6px); right: 0; z-index: 2000; min-width: 320px; max-height: 320px; overflow: auto; }

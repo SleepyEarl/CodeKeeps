@@ -196,5 +196,29 @@ if ($action === 'download') {
     exit;
 }
 
+if ($action === 'get') {
+    $fileId = isset($_GET['file_id']) ? intval($_GET['file_id']) : 0;
+    header('Content-Type: application/json');
+    $stmt = $pdo->prepare('SELECT id, folder_id, original_name, storage_name, mime_type FROM files WHERE id = ? AND user_id = ? LIMIT 1');
+    $stmt->execute([$fileId, $userId]);
+    $file = $stmt->fetch();
+    if (!$file) {
+        echo json_encode(['success' => false, 'message' => 'File not found']);
+        exit;
+    }
+    $path = UPLOAD_DIR . $file['storage_name'];
+    $content = null;
+    if (file_exists($path)) {
+        $isText = strpos($file['mime_type'], 'text/') === 0 || preg_match('/\.(php|js|py|html|css|java|c|cpp)$/', $file['original_name']);
+        if ($isText) {
+            $content = file_get_contents($path);
+        }
+    }
+    $file['download_url'] = '../api/files.php?action=download&file_id=' . $file['id'];
+    $file['content'] = $content;
+    echo json_encode(['success' => true, 'file' => $file]);
+    exit;
+}
+
 header('Content-Type: application/json');
 echo json_encode(['success' => false, 'message' => 'Action not supported']);

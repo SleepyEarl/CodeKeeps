@@ -52,14 +52,40 @@ async function sendAuthForm(form, endpoint) {
 }
 
 function showAlert(message, type = 'success') {
-    const alertArea = document.getElementById('alert-area');
-    if (!alertArea) return;
-    alertArea.innerHTML = `
-        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    `;
+    // toast-style notification: pop in/out
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        container.style.position = 'fixed';
+        container.style.top = '20px';
+        container.style.right = '20px';
+        container.style.zIndex = 99999;
+        document.body.appendChild(container);
+    }
+    const toast = document.createElement('div');
+    toast.className = 'ck-toast ck-toast-' + type;
+    toast.style.marginTop = '8px';
+    toast.style.padding = '10px 14px';
+    toast.style.borderRadius = '8px';
+    toast.style.background = type === 'danger' ? 'rgba(220,53,69,0.95)' : 'rgba(13,110,253,0.95)';
+    toast.style.color = '#fff';
+    toast.style.boxShadow = '0 6px 18px rgba(0,0,0,0.12)';
+    toast.style.opacity = '0';
+    toast.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+    toast.innerText = message;
+    container.appendChild(toast);
+    // animate in
+    requestAnimationFrame(() => {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateY(0)';
+    });
+    // auto remove
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-6px)';
+        setTimeout(() => toast.remove(), 300);
+    }, 3500);
 }
 
 async function loadDashboard() {
@@ -127,19 +153,135 @@ function renderFiles(files) {
 }
 
 function renderFolders(folders) {
-    const folderList = document.getElementById('folder-list');
-    if (!folderList) return;
-    folderList.innerHTML = folders.length ? folders.map(folder => `
-        <div class="col-md-6 col-lg-4 mb-3">
-            <div class="card h-100 file-card folder-card" onclick="openFolderView(${folder.id}, '${escapeHtml(folder.name)}')">
-                <div class="card-body">
-                    <h6 class="card-title">📁 ${escapeHtml(folder.name)}</h6>
-                    <p class="text-muted small mb-1">${folder.file_count} files</p>
-                    <p class="text-primary small">Click to open folder</p>
+    // Populate sidebar Projects area instead
+    renderProjects(folders);
+}
+
+function renderProjects(folders) {
+    const projectsList = document.getElementById('projects-list');
+    if (!projectsList) return;
+    if (!folders.length) {
+        projectsList.innerHTML = '<p class="text-muted small">No projects yet</p>';
+        return;
+    }
+    projectsList.innerHTML = folders.map(folder => `
+        <div class="project-item mb-2">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <a href="../views/folder.php?folder_id=${folder.id}">📁 <strong>${escapeHtml(folder.name)}</strong></a>
+                    <div class="text-muted small">${folder.file_count} files</div>
+                </div>
+                <div>
+                    <a href="#" class="btn btn-sm btn-outline-secondary btn-add-member" data-folder-id="${folder.id}" title="Add member">＋</a>
+                </div>
+            </div>
+            <div class="project-members mt-1 small text-muted" id="members-for-${folder.id}">Members: <span class="text-muted">None</span></div>
+        </div>
+    `).join('');
+
+    // load members for each project
+    folders.forEach(f => loadProjectMembers(f.id));
+
+    document.querySelectorAll('.btn-add-member').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const folderId = btn.dataset.folderId;
+            const email = prompt('Enter member email (Gmail recommended):');
+            if (!email) return;
+            const resp = await fetch(`${apiBase}/members.php?action=add`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ folder_id: folderId, email }),
+            });
+            const data = await handleFormResponse(resp);
+            if (data.success) {
+                showAlert('Member added');
+                loadProjectMembers(folderId);
+            } else {
+                showAlert(data.message || 'Could not add member', 'danger');
+            }
+        });
+    });
+}
+
+async function loadProjectMembers(folderId) {
+    const el = document.getElementById('members-for-' + folderId);
+    if (!el) return;
+    const resp = await fetch(`${apiBase}/members.php?action=list&folder_id=${folderId}`);
+    const data = await handleFormResponse(resp);
+    if (!data.success) {
+        el.innerHTML = 'Members: <span class="text-muted">None</span>';
+        return;
+    }
+    if (!data.members.length) {
+        el.innerHTML = 'Members: <span class="text-muted">None</span>';
+        return;
+    }
+    el.innerHTML = 'Members: ' + data.members.map(m => `<span title="${escapeHtml(m.email)}">${escapeHtml(m.name || m.email)}</span>`).join(', ');
+}
+
+async function openFileViewer(fileId) {
+    const resp = await fetch(`${apiBase}/files.php?action=get&file_id=${fileId}`);
+    const data = await handleFormResponse(resp);
+    if (!data.success) {
+        showAlert('Could not load file', 'danger');
+        return;
+    }
+    const file = data.file;
+    // Build modal
+    const isText = file.mime_type.startsWith('text/') || /\.(php|js|py|html|css|java|c|cpp)$/.test(file.original_name.toLowerCase());
+    let body = '';
+    if (isText) {
+        body = `
+            <textarea id="file-editor" class="form-control" style="min-height:300px; font-family: monospace;">${escapeHtml(file.content || '')}</textarea>
+            <div class="mt-2 text-end">
+                <button class="btn btn-primary" id="save-file-btn">Save</button>
+            </div>
+        `;
+    } else if (file.mime_type.startsWith('image/')) {
+        body = `<div class="text-center"><img src="${file.download_url}" alt="${escapeHtml(file.original_name)}" style="max-width:100%; height:auto;"></div>`;
+    } else {
+        body = `<div class="text-muted">Preview not available. <a href="${file.download_url}" download>Download</a></div>`;
+    }
+
+    const modalHtml = `
+        <div class="modal fade" id="fileViewerModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">${escapeHtml(file.original_name)}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">${body}</div>
                 </div>
             </div>
         </div>
-    `).join('') : '<div class="col-12"><p class="text-muted">No folders yet. Create a folder to organize your files.</p></div>';
+    `;
+    const existing = document.getElementById('fileViewerModal');
+    if (existing) existing.remove();
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    const modal = new bootstrap.Modal(document.getElementById('fileViewerModal'));
+    modal.show();
+    document.getElementById('fileViewerModal').addEventListener('hidden.bs.modal', function () { this.remove(); });
+
+    if (isText) {
+        document.getElementById('save-file-btn').addEventListener('click', async () => {
+            const content = document.getElementById('file-editor').value;
+            const res = await fetch(`${apiBase}/edit_file.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ file_id: fileId, content }),
+            });
+            const r = await handleFormResponse(res);
+            if (r.success) {
+                showAlert('File saved');
+                modal.hide();
+                await loadDashboard();
+            } else {
+                showAlert(r.message || 'Could not save file', 'danger');
+            }
+        });
+    }
 }
 
 function setDashboardStats(stats) {
@@ -420,12 +562,15 @@ async function openRenameFolderModal(fileId, fileName) {
 }
 
 async function searchFiles() {
-    const query = document.getElementById('search-query').value.trim();
+    const queryEl = document.getElementById('navbar-search') || document.getElementById('search-query');
+    const filterEl = document.getElementById('search-filter');
+    const query = (queryEl ? queryEl.value : '').trim();
+    const filter = filterEl ? filterEl.value : 'all';
     if (!query) {
         showAlert('Enter a search term', 'danger');
         return;
     }
-    const response = await fetch(`${apiBase}/search.php?q=${encodeURIComponent(query)}`);
+    const response = await fetch(`${apiBase}/search.php?q=${encodeURIComponent(query)}&filter=${encodeURIComponent(filter)}`);
     const data = await handleFormResponse(response);
     if (!data.success) {
         showAlert('Search failed', 'danger');
@@ -556,5 +701,36 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     if (document.body.dataset.dashboard === 'true') {
         loadDashboard();
+    }
+    // About toggle
+    const aboutToggle = document.getElementById('about-toggle');
+    const aboutSection = document.getElementById('about-section');
+    if (aboutToggle && aboutSection) {
+        aboutToggle.addEventListener('click', () => {
+            aboutSection.classList.toggle('collapsed');
+        });
+    }
+    // Profile button opens floating modal
+    const profileBtn = document.getElementById('profile-btn');
+    if (profileBtn) {
+        profileBtn.addEventListener('click', () => {
+            const modalEl = document.getElementById('profileModal');
+            if (modalEl) {
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+            }
+        });
+    }
+
+    // Project search (filters projects list client-side)
+    const projectSearch = document.getElementById('project-search');
+    if (projectSearch) {
+        projectSearch.addEventListener('input', () => {
+            const q = projectSearch.value.trim().toLowerCase();
+            document.querySelectorAll('#projects-list .project-item').forEach(item => {
+                const text = item.innerText.toLowerCase();
+                item.style.display = q ? (text.includes(q) ? '' : 'none') : '';
+            });
+        });
     }
 });

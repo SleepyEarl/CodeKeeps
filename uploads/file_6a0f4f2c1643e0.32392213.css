@@ -1,0 +1,116 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding-top: 50px;
+    background-color: #f4f4f4;
+}
+
+.container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    width: 400px;
+}
+
+#taskForm {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 20px;
+}
+
+input[type="text"] {
+    flex: 1;
+    padding: 8px;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.task-text {
+    flex: 1;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.completed .task-text {
+    text-decoration: line-through;
+    color: gray;
+    opacity: 0.6;
+}
+
+.actions {
+    display: flex;
+    gap: 5px;
+}
+
+button {
+    border: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    color: rgb(11, 11, 11);
+}
+
+.editBtn { background-color: #ffc107; color: black; }
+.deleteBtn { background-color: #dc3545; }
+.saveBtn { background-color: #28a745; }
+
+.edit-input {
+    flex: 1;
+    padding: 4px;
+    margin-right: 5px;
+}
+
+.category-badge {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-right: 10px;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: rgb(255, 255, 255);
+}
+
+.badge-personal {
+    background-color: #007bff;
+}
+.badge-work {
+    background-color: #6c757d;
+}
+.badge-urgent {
+    background-color: #dc3545;
+}
+
+.task-contnet {
+    display: flex;
+    align-content: center;
+    flex: 1;
+}
+
+.filter-container {
+    margin-bottom: 15px;
+    padding: 10px;
+    background: #fdfdfd;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    font-size: 0.9rem;
+}
+
+
+#filterSelect {
+    margin-left: 10px;
+    padding: 2px;
+}

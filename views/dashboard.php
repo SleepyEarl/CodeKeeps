@@ -6,7 +6,7 @@ if (!is_logged_in()) {
 }
 $userId = get_current_user_id();
 $pdo = db_connect();
-$stmt = $pdo->prepare('SELECT name, profile_pic FROM users WHERE id = ? LIMIT 1');
+$stmt = $pdo->prepare('SELECT name, email, profile_pic FROM users WHERE id = ? LIMIT 1');
 $stmt->execute([$userId]);
 $user = $stmt->fetch();
 $profilePic = $user['profile_pic'] ? '../uploads/' . $user['profile_pic'] : 'https://via.placeholder.com/64?text=CP';
@@ -23,7 +23,8 @@ $profilePic = $user['profile_pic'] ? '../uploads/' . $user['profile_pic'] : 'htt
 <body data-dashboard="true">
 <nav class="navbar navbar-expand-lg navbar-light border-bottom">
     <div class="container-fluid px-4">
-        <a class="navbar-brand" href="#">CodeKeep</a>
+        <a class="navbar-brand me-3" href="#">CodeKeep</a>
+        <!-- navbar search removed per user request -->
         <div class="d-flex align-items-center gap-3">
             <button class="btn btn-sm btn-outline-secondary" onclick="toggleDarkMode()" title="Toggle dark mode" id="dark-mode-btn">
                 <span id="theme-icon">🌙 Dark</span>
@@ -34,9 +35,9 @@ $profilePic = $user['profile_pic'] ? '../uploads/' . $user['profile_pic'] : 'htt
                     <li class="small text-muted">Loading...</li>
                 </ul>
             </div>
-            <a href="profile.php" title="Edit profile">
+            <button id="profile-btn" class="btn btn-link p-0" title="Profile">
                 <img src="<?= htmlspecialchars($profilePic, ENT_QUOTES) ?>" alt="Profile" class="profile-picture">
-            </a>
+            </button>
             <div>
                 <div><?= htmlspecialchars($user['name'], ENT_QUOTES) ?></div>
                 <small class="text-muted">Student Storage</small>
@@ -61,13 +62,16 @@ $profilePic = $user['profile_pic'] ? '../uploads/' . $user['profile_pic'] : 'htt
                     <p class="mb-1"><strong id="used-storage">0</strong> used</p>
                 </div>
                 <hr>
-                <h6>Recently Added</h6>
-                <div id="recent-files-section" class="mt-3">
-                    <p class="text-muted small">No files yet</p>
+                <h6>Projects</h6>
+                <div id="projects-list" class="mt-2 small text-muted">
+                    <p class="text-muted small">No projects yet</p>
+                </div>
+                <div class="mt-2">
+                    <input id="project-search" class="form-control form-control-sm" placeholder="Search projects..." />
                 </div>
                 <hr>
-                <h6>About</h6>
-                <div class="about small text-muted">
+                <h6>About <a class="about-toggle" id="about-toggle">(show/hide)</a></h6>
+                <div class="about small text-muted" id="about-section">
                     <p>CodeKeep is a beginner-friendly full-stack web application designed as a simple cloud file storage and repository system for students. It allows users to securely upload, organize, and manage their files and folders online anytime and anywhere using a web browser. Built using PHP, MySQL, JavaScript, and Bootstrap, CodeKeep demonstrates core concepts of web development such as authentication, database management, file handling, and API-based backend structure. The system is designed to be lightweight, easy to use, and educational, making it ideal for students who are learning full-stack development.</p>
 
                     <p>This project was created by me 2nd year Computer Studies student, Earl Lumosad, from St. Peter’s College, Iligan City, as part of my academic practice in building real-world web applications.</p>
@@ -79,20 +83,10 @@ $profilePic = $user['profile_pic'] ? '../uploads/' . $user['profile_pic'] : 'htt
         </div>
         <div class="col-xl-9">
             <div class="row g-3 mb-4">
-                <div class="col-md-8">
+                <div class="col-12">
                     <div class="card p-3 h-100">
                         <h5>Welcome back, <?= htmlspecialchars($user['name'], ENT_QUOTES) ?>!</h5>
                         <p class="text-muted">Manage your projects, notes, images, and documents in one place.</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card p-3 h-100">
-                        <h6>Search files</h6>
-                        <div class="input-group mb-3">
-                            <input id="search-query" type="text" class="form-control" placeholder="Search files...">
-                            <button class="btn btn-primary" type="button" onclick="searchFiles()">Search</button>
-                        </div>
-                        <div id="search-results"></div>
                     </div>
                 </div>
             </div>
@@ -147,13 +141,42 @@ $profilePic = $user['profile_pic'] ? '../uploads/' . $user['profile_pic'] : 'htt
                     </div>
                 </div>
             </div>
-            <div class="row g-3 mb-4" id="folders-section">
-                <div class="col-12">
-                    <h5>Folder list</h5>
-                    <div class="row" id="folder-list"></div>
-                </div>
-            </div>
+            <!-- Folder list moved to sidebar Projects -->
             <!-- Activity moved to navbar dropdown -->
+
+<!-- Profile modal -->
+<div class="modal fade" id="profileModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="profile-form" enctype="multipart/form-data">
+                    <div class="text-center mb-3">
+                        <img src="<?= htmlspecialchars($profilePic, ENT_QUOTES) ?>" alt="Profile" class="profile-picture-large mb-3">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" name="name" class="form-control" value="<?= htmlspecialchars($user['name'], ENT_QUOTES) ?>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($user['email'] ?? '', ENT_QUOTES) ?>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Profile picture</label>
+                        <input type="file" name="profile_picture" class="form-control">
+                    </div>
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
         </div>
     </div>
 </div>
